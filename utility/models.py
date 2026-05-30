@@ -123,4 +123,5 @@ class Decoder(nn.Module):
     
   def forward(self, input):
     return self.decoder(input)
-    
+  
+  
