@@ -46,6 +46,7 @@ class VGGEncoder(nn.Module):
       nn.ReflectionPad2d((1, 1, 1, 1)),
       nn.Conv2d(512, 512, (3, 3)),
       nn.ReLU(), #relu4 -4
+      nn.MaxPool2d((2, 2), (2, 2,), (0, 0), ceil_mode=True),
       nn.ReflectionPad2d((1, 1, 1, 1)),
       nn.Conv2d(512, 512, (3, 3)),
       nn.ReLU(), #relu5 -1
@@ -57,7 +58,7 @@ class VGGEncoder(nn.Module):
       nn.ReLU(), #relu5 -3
       nn.ReflectionPad2d((1, 1, 1, 1)),
       nn.Conv2d(512, 512, (3, 3)),
-      nn.ReLU(), #relu5 -4
+      nn.ReLU() #relu5 -4
       
       )
   
@@ -78,5 +79,48 @@ class VGGEncoder(nn.Module):
     h2 = self.enc_2(h1)
     h3 = self.enc_3(h2)
     h4 = self.enc_4(h3)
+    if is_test:
+      return h4
     return h1, h2, h3, h4
+  
+
+class Decoder(nn.Module):
+  def __init__(self):
+    super().__init__()
+    
+    self.decoder = nn.Sequential(
+      nn.ReflectionPad2d((1, 1, 1, 1)),
+      nn.Conv2d(512, 256, (3, 3)),
+      nn.ReLU(),
+      nn.Upsample(scale_factor=2, mode="nearest"),
+      nn.ReflectionPad2d((1, 1, 1, 1)),
+      nn.Conv2d(256, 256, (3, 3)),
+      nn.ReLU(),
+      nn.ReflectionPad2d((1, 1, 1, 1)),
+      nn.Conv2d(256, 256, (3, 3)),
+      nn.ReLU(),
+      nn.ReflectionPad2d((1, 1, 1, 1)),
+      nn.Conv2d(256, 256, (3, 3)),
+      nn.ReLU(),
+      nn.ReflectionPad2d((1, 1, 1, 1)),
+      nn.Conv2d(256, 128, (3, 3)),
+      nn.ReLU(),
+      nn.Upsample(scale_factor=2, mode="nearest"),
+      nn.ReflectionPad2d((1, 1, 1, 1)),
+      nn.Conv2d(128, 128, (3, 3)),
+      nn.ReLU(),
+      nn.ReflectionPad2d((1, 1, 1, 1)),
+      nn.Conv2d(128, 64, (3, 3)),
+      nn.ReLU(),
+      nn.Upsample(scale_factor=2, mode="nearest"),
+      nn.ReflectionPad2d((1, 1, 1, 1)),
+      nn.Conv2d(64, 64, (3, 3)),
+      nn.ReLU(),
+      nn.ReflectionPad2d((1, 1, 1, 1)),
+      nn.Conv2d(64, 3, (3, 3)),
+      
+    )
+    
+  def forward(self, input):
+    return self.decoder(input)
     
