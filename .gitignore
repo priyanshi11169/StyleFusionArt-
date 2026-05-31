@@ -12,6 +12,9 @@ __pycache__/
 # Virtual environment
 nst/
 
+# Data folders
+content_data/
+style_data/
 
 # VS Code
 .vscode/
@@ -19,3 +22,4 @@ nst/
 # OS files
 .DS_Store
 Thumbs.db
+
