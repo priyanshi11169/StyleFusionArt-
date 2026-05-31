@@ -1,3 +1,21 @@
+# Model weights (large files)
+*.pth
+
+# Experiment outputs
+experiment/
+
+# Python cache
 __pycache__/
 *.pyc
+.pytest_cache/
+
+# Virtual environment
+nst/
+
+
+# VS Code
 .vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

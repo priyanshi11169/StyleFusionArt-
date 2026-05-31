@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from utility.models import *
 import torch.optim as optim
 from tqdm import tqdm
+from torchvision.utils import save_image
 
 
 def parse_arguments():
@@ -41,10 +42,18 @@ def parse_arguments():
     
     parser.add_argument("--content_weight", type=float, default=1.0,
                         help="Content weight")
-    parser.add_argument("--style_weight", type=float, default=10,
+    parser.add_argument("--style_weight", type=float, default=5,
                         help="style weight")
     parser.add_argument("--log_interval", type=int, default=1,
                         help="Log interval")
+    parser.add_argument("--save_interval", type=int, default=2,
+                        help="save interval")
+    parser.add_argument("--resume", action="store_true", default=False,
+                        help="Resume training")
+    parser.add_argument("--decoder_path", type=str, default=None,
+                        help="Path to decoder checkpoint")
+    parser.add_argument("--optimizer_path", type=str, default=None,
+                        help="Path to optimizer checkpoint")
                         
     
 
@@ -86,6 +95,10 @@ def main():
         optimizer=optimizer,
         lr_lambda=lambda epoch: 1.0 / (1.0 + args.lr_decay * epoch)
     )
+    
+    if args.resume:
+        decoder.load_state_dict(torch.load(args.decoder_path))
+        optimizer.load_state_dict(torch.load(args.optimizer_path))
 
     print("Training...")
 
@@ -93,7 +106,7 @@ def main():
 
     encoder.eval()
 
-    running_loss = None
+    running_loss = None 
     running_closs = None
     running_sloss = None
 
@@ -145,6 +158,16 @@ def main():
         
         if (epoch+1) % args.log_interval == 0:
             tqdm.write(f"Iter {epoch+1} : loss{running_loss:4f} Content loss :{running_closs:4f} Style loss :{running_sloss:4f}")
+        
+        if (epoch+1) % args.save_interval == 0:
+            torch.save(decoder.state_dict(), save_dir / f"decoder_{epoch+1}.pth")
+            torch.save(optimizer.state_dict(), save_dir / f"optimizer_{epoch+1}.pth")
+            
+            with torch.no_grad():
+                output = torch.cat([content_batch, style_batch, g], dim=0)
+                save_image(output, save_dir / f"output_{epoch+1}.png", nrow=args.batch_size)
+                
+        
             
             
             
