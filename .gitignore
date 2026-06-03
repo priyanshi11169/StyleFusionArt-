@@ -1,8 +1,7 @@
-# Model weights (large files)
-*.pth
-
 # Experiment outputs
-experiment/
+experiment/trial/
+experiment/trial2/
+experiment/experiment2/
 
 # Python cache
 __pycache__/
