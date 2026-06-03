@@ -146,7 +146,9 @@ def send_image(filename):
 
 @app.route('/examples/<path:filename>')
 def send_example(filename):
-  return send_from_directory(r"C:\Users\jiyat\Desktop\Projects\NST Project\examples", filename)
+  return send_from_directory(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "examples"), 
+    filename)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
